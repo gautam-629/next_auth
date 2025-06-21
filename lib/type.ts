@@ -19,3 +19,10 @@ export const SignUpFormSchema=z.object({
              .regex(/[^a-zA-Z0-9]/,{message:'contain at lest one special character.'})
              .trim()
 })
+
+export const signInFormSchema=z.object({
+   
+    email:z.string().email({message:'Please enter a valid email'}).trim(),
+    password:z.string().min(1,{message:'Password filed must be not be empty'})
+            
+})

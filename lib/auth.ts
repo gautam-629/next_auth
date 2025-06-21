@@ -1,12 +1,11 @@
 'use server'
 
 import { redirect} from "next/navigation";
-import { FormState, SignUpFormSchema } from "./type";
+import { FormState, signInFormSchema, SignUpFormSchema } from "./type";
 import { BACKEND_URL } from "./constrant";
 
 export async function singnUp(state:FormState,formData:FormData):Promise<FormState> {
     
-
     //validate form data
      const validationFields=SignUpFormSchema.safeParse({
         name:formData.get('name'),
@@ -50,4 +49,39 @@ export async function singnUp(state:FormState,formData:FormData):Promise<FormSta
     }
 
     
+}
+
+export async function signIn(state:FormState,formData:FormData):Promise<FormState> {
+    //validate form data
+     const validationFields=signInFormSchema.safeParse({
+        email:formData.get('email'),
+        password:formData.get('password')
+     });
+
+     if(!validationFields.success){
+        return{
+            error:validationFields.error.flatten().fieldErrors
+        };
+     }
+
+   const response=await fetch(`${BACKEND_URL}/auth/signin`,{
+    method:'Post',
+    headers:{
+        'Content-Type':'application/json'
+    },
+    body:JSON.stringify(validationFields.data)
+})
+
+   if(response.ok){
+
+    //create a session for authentication user
+  const result=await response.json()
+  console.log({result})
+   }
+   else{
+      return{
+        message:response.status==401?'Invalid Credentials':response.statusText
+      }
+   }
+
 }
