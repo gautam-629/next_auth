@@ -3,6 +3,7 @@
 import { redirect} from "next/navigation";
 import { FormState, signInFormSchema, SignUpFormSchema } from "./type";
 import { BACKEND_URL } from "./constrant";
+import { createSession } from "./session";
 
 export async function singnUp(state:FormState,formData:FormData):Promise<FormState> {
     
@@ -76,7 +77,16 @@ export async function signIn(state:FormState,formData:FormData):Promise<FormStat
 
     //create a session for authentication user
   const result=await response.json()
-  console.log({result})
+
+ await createSession({
+          user:{
+            id:result.id,
+
+            name:result.name
+          }
+  })
+
+        redirect('/')
    }
    else{
       return{
