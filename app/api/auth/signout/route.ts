@@ -7,7 +7,7 @@ export async function GET(req:NextRequest){
    await deleteSession()
 
    revalidatePath('/', 'layout');
-   revalidatePath('/');
+   revalidatePath('/','page');
 
    return NextResponse.redirect(new URL('/',req.nextUrl))
 }

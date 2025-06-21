@@ -1,3 +1,4 @@
+import { logoutAction } from "@/lib/auth";
 import { getSession } from "@/lib/session";
 import Link from "next/link";
 import React from "react";
@@ -5,7 +6,6 @@ import React from "react";
 const SignInButton = async () => {
   const session = await getSession();
 
-  console.log(session?.user.name);
   return (
     <div className="flex items-center gap-2 ml-auto">
       {!session || !session.user ? (
@@ -16,7 +16,10 @@ const SignInButton = async () => {
       ) : (
         <>
           <p>{session.user.name}</p>
-          <Link href={"/api/auth/signout"}>Signout</Link>
+          {/* <Link href={"/api/auth/signout"}>Signout</Link> */}
+          <form action={logoutAction}>
+            <button className="cursor-pointer">Logout</button>
+          </form>
         </>
       )}
     </div>

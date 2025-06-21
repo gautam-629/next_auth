@@ -3,7 +3,8 @@
 import { redirect} from "next/navigation";
 import { FormState, signInFormSchema, SignUpFormSchema } from "./type";
 import { BACKEND_URL } from "./constrant";
-import { createSession } from "./session";
+import { createSession, deleteSession } from "./session";
+import { revalidatePath } from "next/cache";
 
 export async function singnUp(state:FormState,formData:FormData):Promise<FormState> {
     
@@ -94,4 +95,11 @@ export async function signIn(state:FormState,formData:FormData):Promise<FormStat
       }
    }
 
+}
+
+
+export async function logoutAction(){
+    await deleteSession()
+    revalidatePath('/','layout');
+    redirect('/')
 }
