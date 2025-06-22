@@ -21,7 +21,6 @@ export async function singnUp(state:FormState,formData:FormData):Promise<FormSta
         };
      }
 
-
       try {
         // Use BACKEND_URL constant instead of hardcoded localhost
         const response = await fetch(`${BACKEND_URL}/auth/signup`, {
@@ -82,9 +81,10 @@ export async function signIn(state:FormState,formData:FormData):Promise<FormStat
  await createSession({
           user:{
             id:result.id,
-
             name:result.name
-          }
+          },
+            accessToken:result.accessToken,
+            refreshToken:result.refreshToken
   })
 
         redirect('/')
@@ -102,4 +102,36 @@ export async function logoutAction(){
     await deleteSession()
     revalidatePath('/','layout');
     redirect('/')
+}
+
+
+export const refreshToken= async(oldRefreshToken:string)=>{
+ try {
+    const response=await fetch(`${BACKEND_URL}/auth/refresh`,{
+        method:'POST',
+        headers:{
+           'Content-Type': 'application/json',
+        },
+        body:JSON.stringify({
+            refresh:oldRefreshToken
+        })
+    })
+    if(!response.ok){
+        throw new Error('Failed to refresh token')
+    }
+    const {accessToken,refreshToken}=await response.json();
+     await fetch('http://localhost:3000/api/auth/update',{
+       method:'POST',
+        headers:{
+           'Content-Type': 'application/json',
+        },
+        body:JSON.stringify({
+            refreshToken,
+            accessToken
+        })
+     })
+    return accessToken
+ } catch (error) {
+    console.log('refreshToken failed',error)
+ }
 }

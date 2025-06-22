@@ -10,8 +10,8 @@ export type Session = {
         id: string;
         name: string;
     };
-    // accessToken: string;
-    // refreshToken: string;
+    accessToken: string;
+    refreshToken: string;
 }
 
 export async function createSession(payload: Session) {
@@ -50,4 +50,23 @@ export async function getSession(): Promise<Session | null> {
 
 export async function deleteSession() {
     (await cookies()).delete('session')
+}
+
+export async function updateTokens({accessToken,refreshToken}:{accessToken:string,refreshToken:string}){
+       const cookie=(await cookies()).get('session')?.value
+       if(!cookie) return null;
+
+       const {payload}=await jwtVerify<Session>(cookie,encodedkey)
+
+       if(!payload) throw new Error("Session not Found")
+
+        const newPayload:Session={
+               user:{
+                ...payload.user
+               },
+               accessToken,
+               refreshToken
+        }
+
+        await createSession(newPayload)
 }
